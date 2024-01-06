@@ -1,0 +1,45 @@
+version: "3.3"
+services:
+  mysql_s:
+    image: mysql:8.0.19
+    container_name: mysql_con
+    restart: on-failure
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      - MYSQL_ROOT_PASSWORD=admin123
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=admin123
+    volumes:
+      - mysql-data:/var/lib/mysql
+    ports:
+      - "0.0.0.0:3306:3306"
+  phpmyadmin:
+    container_name: phpmyadmin_con
+    image: phpmyadmin/phpmyadmin:5.0.1
+    restart: on-failure
+    environment:
+      PMA_HOST: mysql_s
+      UPLOAD_LIMIT: 64M
+    ports:
+      - "0.0.0.0:8084:80"
+  rabbitmq:
+    container_name: rabbitmq_con
+    # image: rabbitmq:3-management-alpine
+    image: rabbitmq:3-management
+    command: rabbitmq-server
+    volumes:
+      - docker-etc:/etc/rabbitmq/
+      - docker-data:/var/lib/rabbitmq/
+      - docker-logs:/var/log/rabbitmq/
+    # environment:
+    #   RABBITMQ_ERLANG_COOKIE: rabbit_cook
+    #   RABBITMQ_DEFAULT_USER: admin
+    #   RABBITMQ_DEFAULT_PASS: admin123
+    ports:
+      - '0.0.0.0:15672:15672'
+      - '0.0.0.0:5672:5672'
+volumes:
+  mysql-data:
+  docker-etc:
+  docker-data:
+  docker-logs:
